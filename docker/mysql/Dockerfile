@@ -1,0 +1,7 @@
+FROM mysql:8.0
+
+ENV TZ=UTC \
+  MYSQL_DATABASE=oAuth \
+  MYSQL_USER=developer \
+  MYSQL_PASSWORD=root \
+  MYSQL_ROOT_PASSWORD=root

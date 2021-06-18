@@ -1,0 +1,76 @@
+version: '3.8'
+services:
+  db:
+    build:
+      context: .
+      dockerfile: ./docker/mysql/Dockerfile
+    container_name: db
+    ports:
+      - 3306:3306
+    restart: always
+    volumes:
+      - ./docker/mysql/conf:/etc/mysql/conf.d/:ro
+      - mysqldata:/var/lib/mysq
+      - ./docker/mysql/sql:/docker-entrypoint-initdb.d
+    networks:
+      - default
+
+  client:
+    build:
+      context: .
+      dockerfile: ./docker/node/Dockerfile
+    container_name: client
+    tty: true
+    ports:
+      - 9000:9000
+    restart: always
+    volumes:
+      - ../oauth-in-action-code:/app
+    working_dir: /app
+    command: yarn client
+    networks:
+      - default
+    depends_on:
+      - db
+
+  authorization:
+    build:
+      context: .
+      dockerfile: ./docker/node/Dockerfile
+    container_name: authorization
+    tty: true
+    ports:
+      - 9001:9001
+    restart: always
+    volumes:
+      - ../oauth-in-action-code:/app
+    working_dir: /app
+    command: yarn authorization
+    networks:
+      - default
+    depends_on:
+      - db
+
+  resource:
+    build:
+      context: .
+      dockerfile: ./docker/node/Dockerfile
+    container_name: resource
+    tty: true
+    ports:
+      - 9002:9002
+    restart: always
+    volumes:
+      - ../oauth-in-action-code:/app
+    working_dir: /app
+    command: yarn resource
+    networks:
+      - default
+    depends_on:
+      - db
+
+networks:
+  default:
+
+volumes:
+  mysqldata:
